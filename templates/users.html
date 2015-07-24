@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+   {{template "_head.html"}}
+   <body id="page-top" class="index">
+      <header>
+         {{template "_navigation.html"}}
+      </header>
+      <div class="container">
+         <div class="bs-docs-section">
+            <div class="bs-component">
+               <table class="table table-striped table-hover ">
+                  <tbody>   
+                  <form action="">
+                     
+                        <tr><td>Username</td><td><input type="text" name="username"></td></tr>
+                        <tr><td>Shell-type </td><td><input type="text" name="shell-type"></td></tr>
+                        <tr><td>Home-Folder </td><td><input type="text" name="home-folder"></td></tr>
+                        <tr><td>Password </td><td><input type="password" name="password"></td></tr>
+                        <tr><td>Sudo user? </td><td><input type="radio" name="issudouser" value="Yes">Yes <input type="radio" name="isssudouser" value="No">No </td></tr>
+                     	
+                    </form> 
+                  </tbody>
+               </table>
+               <button type="button">Create</button><br>
+               <button type="button">Delete</button><br>
+               <button type="button">Modify</button><br>
+               <textarea rows="4" cols="50">
+               
+               </textarea>
+            </div>
+         </div>
+      </div>
+      {{template "_footer.html"}}
+   </body>
+</html>
