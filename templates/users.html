@@ -6,33 +6,77 @@
          {{template "_navigation.html"}}
       </header>
       <div class="container">
-            <h2> Create, Delete or Modify linux user </h2><br><br>
-               <table class="table table-striped table-hover ">
-                  <tbody>   
-                  <form action=""
-                        <tr><td>Username</td><td><input type="text" name="username"></td></tr>
-                        <tr><td>Shell-type </td><td><input type="text" name="shell-type"></td></tr>
-                        <tr><td>Home-Folder </td><td><input type="text" name="home-folder"></td></tr>
-                        <tr><td>Password </td><td><input type="password" name="password"></td></tr>
-                        <tr><td>Sudo user? </td><td><input type="radio" name="issudouser" value="Yes">Yes    <input type="radio" name="issudouser" value="No">No    </td></tr>
-                    </form> 
-                  </tbody>
-               </table>
-               <br>
-               <div style="text-align: center;">
-               <button type="button">Create</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-               <button type="button">Delete</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-               <button type="button">Modify</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         <h2> Create, Delete or Modify linux user </h2>
+         <br><br>
+         <form id="chatbox">
+            <table class="table table-striped table-hover ">
+               <tbody>
+                  <tr>
+                     <td>Username</td>
+                     <td><input type="text" id="username"></td>
+                  </tr>
+                  <tr>
+                     <td>Shell-type </td>
+                     <td><input type="text" id="shell-type"></td>
+                  </tr>
+                  <tr>
+                     <td>Home-Folder </td>
+                     <td><input type="text" id="home-folder"></td>
+                  </tr>
+                  <tr>
+                     <td>Password </td>
+                     <td><input type="password" id="password"></td>
+                  </tr>
+                  <tr>
+                     <td>Sudo user? </td>
+                     <td>
+                        <input type="radio" id="issudouser" "name="issudouser" value="Yes">Yes&nbsp;&nbsp;
+                        <input type="radio" id="issudouser" name="issudouser" value="No">No&nbsp;&nbsp;
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Operation </td>
+                     <td>
+                        <input type="radio" id="operation" name="operation" value="Create">Create&nbsp;&nbsp;
+                        <input type="radio" id="operation name="operation" value="Delete">Delete&nbsp;&nbsp;
+                        <input type="radio" id="operation" name="operation" value="Modify">Modify&nbsp;&nbsp;
+                     </td>
+                  </tr>
+               </tbody>
+            </table><br>
+			<div style="text-align: center;">
+               <input type="submit" value="Submit" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                <br><br>
                <h4>Result</h4>
-               <textarea rows="4" cols="80">
-               
-               </textarea>
-               </div>
-               <br><br>
-            </div>
+               <textarea rows="4" cols="80" id="resultbox"></textarea>
+            </div>   		
+         </form>
+         
+         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+         <script>   
+         	//$('#resultbox').append("Socket open");
+         	
+            $(function(){
+            	$("#chatbox").submit(function(){
+            			var username = $("#username").val();
+            			var shelltype = $("#shell-type").val(); 
+            			var homefolder = $("#home-folder").val();
+            			var pass = $("#password").val();
+            			var sudoopt = $('#issudouser').val();
+            			var operation = $('#operation').val();
+            			//alert(username + shelltype + homefolder + pass + sudoopt + operation);
+            			var conn = new WebSocket("ws://localhost:8005/ws?username="+username+"&shelltype="+shelltype+"&homefolder="+homefolder+"&pass="+pass+"&sudoopt="+sudoopt+"&operation="+operation+"");
+            			conn.onclose = function(evt) {
+            				
+            			}
+            			conn.onmessage = function(evt) {
+            			
+            			}
+            		});
+            });
+         </script>
          </div>
-      </div>
+         <br><br>
       {{template "_footer.html"}}
    </body>
 </html>

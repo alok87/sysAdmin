@@ -8,6 +8,17 @@ import (
 	"strings"
 	"os"
 	"bufio"
+	//"log"
+	//"fmt"
+	
+	"github.com/gorilla/websocket"
+)
+
+var (
+	upgrader  = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
 )
 
 func Register(template *template.Template) {
@@ -15,10 +26,30 @@ func Register(template *template.Template) {
 	uc := new(usersController)
 	uc.template = template.Lookup("users.html")
 	http.HandleFunc("/", uc.serveUsers)
+	http.HandleFunc("/ws", serveWs)
 	
 	http.HandleFunc("/img/", serveResource)
 	http.HandleFunc("/css/", serveResource)
 }
+
+func serveWs(w http.ResponseWriter, r *http.Request) {
+	//fmt.Println("ServeWS: ",r.URL.Path)
+	/*ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		if _, ok := err.(websocket.HandshakeError); !ok {
+			log.Println(err)
+		}
+		return
+	}*/
+	username := r.FormValue("username")
+	shelltype := r.FormValue("shelltype")
+	homefolder := r.FormValue("homefolder")
+	pass := r.FormValue("pass")
+	sudoopt := r.FormValue("sudoopt")
+	operation := r.FormValue("operation")
+	
+	
+}	
 
 type templateHandler struct {
 	fileName string
