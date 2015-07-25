@@ -47,15 +47,10 @@
 			<div style="text-align: center;">
                <input type="submit" value="Submit" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                <br><br>
-               <h4>Result</h4>
-               <textarea rows="4" cols="80" id="resultbox"></textarea>
-            </div>   		
+            </div> 	
          </form>
-         
          <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-         <script>   
-         	//$('#resultbox').append("Socket open");
-         	
+         <script> 
             $(function(){
             	$("#chatbox").submit(function(){
             			var username = $("#username").val();
@@ -64,15 +59,17 @@
             			var pass = $("#password").val();
             			var sudoopt = $('#issudouser').val();
             			var operation = $('#operation').val();
-            			//alert(username + shelltype + homefolder + pass + sudoopt + operation);
+            			
             			var conn = new WebSocket("ws://localhost:8005/ws?username="+username+"&shelltype="+shelltype+"&homefolder="+homefolder+"&pass="+pass+"&sudoopt="+sudoopt+"&operation="+operation+"");
             			conn.onclose = function(evt) {
             				
             			}
-            			conn.onmessage = function(evt) {
-            			
-            			}
+            			conn.onmessage = function(e) {
+            				var data = e.data;
+            				alert(data);
+            			}	
             		});
+            		
             });
          </script>
          </div>

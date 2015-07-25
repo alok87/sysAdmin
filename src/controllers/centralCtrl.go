@@ -8,8 +8,10 @@ import (
 	"strings"
 	"os"
 	"bufio"
-	//"log"
-	//"fmt"
+	"log"
+	"os/exec"
+	"time"
+	"fmt"
 	
 	"github.com/gorilla/websocket"
 )
@@ -19,6 +21,11 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
+)
+
+const (
+	// Time allowed to write the file to the client.
+	writeWait = 10 * time.Second	
 )
 
 func Register(template *template.Template) {
@@ -33,14 +40,14 @@ func Register(template *template.Template) {
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
-	//fmt.Println("ServeWS: ",r.URL.Path)
-	/*ws, err := upgrader.Upgrade(w, r, nil)
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
 			log.Println(err)
 		}
 		return
-	}*/
+	}
+	
 	username := r.FormValue("username")
 	shelltype := r.FormValue("shelltype")
 	homefolder := r.FormValue("homefolder")
@@ -48,7 +55,22 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	sudoopt := r.FormValue("sudoopt")
 	operation := r.FormValue("operation")
 	
-	
+	binary, lookErr := exec.LookPath("echo")
+    if lookErr != nil {
+        panic(lookErr)
+    }
+    cmd := exec.Command(binary, username, shelltype, homefolder, pass, sudoopt, operation)
+    cmdOut, err := cmd.Output()
+    if err != nil {
+        panic(err)
+    }
+    
+    fmt.Println(string(cmdOut))  
+    //ws.SetWriteDeadline(time.Now().Add(writeWait))
+	if err := ws.WriteMessage(websocket.TextMessage, cmdOut); err != nil {
+			fmt.Println(err)
+			return
+	} 
 }	
 
 type templateHandler struct {
