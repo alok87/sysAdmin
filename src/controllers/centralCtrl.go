@@ -12,6 +12,7 @@ import (
 	//"os/exec"
 	"time"
 	"fmt"
+	"encoding/json"
 	
 	"github.com/gorilla/websocket"
 )
@@ -32,6 +33,15 @@ type client struct {
 	socket *websocket.Conn
 	send chan []byte
 	forward chan []byte
+}
+
+type User struct {
+    Username	string	`json:"username"`
+    Shelltype	string	`json:"shelltype"`
+    HomeFolder	string	`json:"homefolder"`
+    Pass		string	`json:"pass"`
+    SudoOpt		string	`json:"sudoopt"`
+    Operation	string	`json:"operation"`
 }
 
 func Register(template *template.Template) {
@@ -65,13 +75,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	go client.action()
 	client.read()
 	
-	/*username := r.FormValue("username")
-	shelltype := r.FormValue("shelltype")
-	homefolder := r.FormValue("homefolder")
-	pass := r.FormValue("pass")
-	sudoopt := r.FormValue("sudoopt")
-	operation := r.FormValue("operation")
-	
+	/*
 	binary, lookErr := exec.LookPath("echo")
     if lookErr != nil {
         panic(lookErr)
@@ -94,8 +98,11 @@ func (c *client) action() {
 	fmt.Println("forwarding msg to forward channel for action")
 	for {
 			msg := <- c.forward 
-			fmt.Println(msg);
-			c.send <- msg
+			user := &User{}
+			json.Unmarshal([]byte(msg), &user)
+			msgSentback := user.Username
+			//fmt.Println(msg);
+			c.send <- []byte(msgSentback)
 			fmt.Println("msg forwarded to send channel")
 	}
 }
