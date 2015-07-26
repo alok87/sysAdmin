@@ -9,7 +9,7 @@ import (
 	"os"
 	"bufio"
 	"log"
-	"os/exec"
+	//"os/exec"
 	"time"
 	"fmt"
 	
@@ -28,11 +28,17 @@ const (
 	writeWait = 10 * time.Second	
 )
 
+type client struct {
+	socket *websocket.Conn
+	send chan []byte
+	forward chan []byte
+}
+
 func Register(template *template.Template) {
 	
 	uc := new(usersController)
 	uc.template = template.Lookup("users.html")
-	http.HandleFunc("/", uc.serveUsers)
+	http.HandleFunc("/users", uc.serveUsers)
 	http.HandleFunc("/ws", serveWs)
 	
 	http.HandleFunc("/img/", serveResource)
@@ -40,6 +46,7 @@ func Register(template *template.Template) {
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("inside ws")
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
@@ -48,7 +55,17 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	username := r.FormValue("username")
+	client := &client{
+		socket: ws,
+		send: make(chan []byte, 256),
+		forward: make(chan []byte),
+	}
+	
+	go client.write()
+	go client.action()
+	client.read()
+	
+	/*username := r.FormValue("username")
 	shelltype := r.FormValue("shelltype")
 	homefolder := r.FormValue("homefolder")
 	pass := r.FormValue("pass")
@@ -70,8 +87,41 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	if err := ws.WriteMessage(websocket.TextMessage, cmdOut); err != nil {
 			fmt.Println(err)
 			return
-	} 
+	} */
 }	
+
+func (c *client) action() {
+	fmt.Println("forwarding msg to forward channel for action")
+	for {
+			msg := <- c.forward 
+			fmt.Println(msg);
+			c.send <- msg
+			fmt.Println("msg forwarded to send channel")
+	}
+}
+
+func (c *client) read() {
+	fmt.Println("Reading msg from socket")
+	for {
+		if _, msg, err := c.socket.ReadMessage(); err == nil {
+			c.forward <- msg
+			fmt.Println("message read, ", msg)
+		} else {
+			fmt.Println("error", err)
+			break
+		}
+	}
+	c.socket.Close()
+}
+
+func (c *client) write() {
+	for msg := range c.send {
+		if err := c.socket.WriteMessage(websocket.TextMessage, msg); err != nil {
+			break
+		}
+	}
+	c.socket.Close()
+}
 
 type templateHandler struct {
 	fileName string

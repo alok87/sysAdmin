@@ -49,29 +49,58 @@
                <br><br>
             </div> 	
          </form>
-         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-         <script> 
-            $(function(){
-            	$("#chatbox").submit(function(){
-            			var username = $("#username").val();
-            			var shelltype = $("#shell-type").val(); 
-            			var homefolder = $("#home-folder").val();
-            			var pass = $("#password").val();
-            			var sudoopt = $('#issudouser').val();
-            			var operation = $('#operation').val();
-            			
-            			var conn = new WebSocket("ws://localhost:8005/ws?username="+username+"&shelltype="+shelltype+"&homefolder="+homefolder+"&pass="+pass+"&sudoopt="+sudoopt+"&operation="+operation+"");
-            			conn.onclose = function(evt) {
-            				
-            			}
-            			conn.onmessage = function(e) {
-            				var data = e.data;
-            				alert(data);
-            			}	
-            		});
+         
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script>
+      		$(function(){
+      			var socket = null;
+        		$("#chatbox").submit(function(){
+        			
+        			var username = $("#username").val();
+					var shelltype = $("#shell-type").val(); 
+            		var homefolder = $("#home-folder").val();
+            		var pass = $("#password").val();
+            		var sudoopt = $('#issudouser').val();
+            		var operation = $('#operation').val();
+					var msgToSend = username + "##" + shelltype + "##" + homefolder + "##" + pass + "##" + sudoopt + "##" + operation;
+        			
+            		//msgToSend="hello alok how are you";
             		
-            });
-         </script>
+		         	if (!msgToSend) return false;
+		          	if (!socket) {
+		            	alert("Error: There is no socket connection.");
+		            	return false;
+		          	}
+		          	socket.send(msgToSend);
+		          	return false;
+		        });
+        		
+        			
+	        		if (!window["WebSocket"]) {
+	          			alert("Error: Your browser does not support web sockets.")
+	        		} else {
+	        		
+	          			socket = new WebSocket("ws://localhost:8005/ws");
+	          			
+	          			socket.onmessage = function(e) {
+	            			alert(e.data);
+	          			}
+	          			
+	          			socket.onclose = function(event) {
+	          				alert("Socket connection closed");
+	          			}
+	          			
+	          			socket.onerror = function(event) {
+	          				alert("Socket error");
+	          			}
+	          			
+	          			socket.onopen = function(event) {
+	          				alert("Socket open");
+	          			}
+
+        			}
+	      		});
+    	</script>
          </div>
          <br><br>
       {{template "_footer.html"}}

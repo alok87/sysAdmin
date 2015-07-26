@@ -10,7 +10,7 @@ type usersController struct {
 }
 
 func (this *usersController) serveUsers(w http.ResponseWriter, req *http.Request) {
-	if req.URL.Path != "/" {
+	if req.URL.Path != "/users" {
 		http.Error(w, "Not found", 404)
 		return
 	}
