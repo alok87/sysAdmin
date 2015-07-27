@@ -8,23 +8,21 @@ Installation
  
  * Install docker in the machine where this application will run in a container.
  
-   	https://docs.docker.com/installation/
+   	[Install Golang](hhttps://docs.docker.com/installation/)
 
  * Clone the application's repository from github.
 
-   	git clone https://github.com/alok87/sysadminApp
+   	```git clone https://github.com/alok87/sysadminApp```
 
  * Build the Dockerfile, to create an image.
- 
+ 	```
    	cd sysadminApp
-
    	docker build -t <yourusername>/sysadminApp .
-   	
    	eg: docker build -t alok87/sysadminApp
-
+	```
  * Run the docker image to spwan the container.
    
-	docker run --name sysadmin01 alok87/sysadminApp 
+	```docker run --name sysadmin01 alok87/sysadminApp```
  
  * Visit http://localhost:8005/users
  
@@ -33,7 +31,7 @@ Installation
 
  * Setup the password less sudo access for the user who will run the application. 
  
-   	sudo visudo	or open the /etc/sudoerrs file (it wil prompt for the password please give it)
+   	```sudo visudo```	or open the ```/etc/sudoerrs``` file (it wil prompt for the password please give it)
 
    	Add the below lines in it. (user here is aks for example )
    	
@@ -45,13 +43,13 @@ Installation
  
  * Disable requiretty 
  
-   	sudo visudo or open the /etc/sudoerrs file
+   	```sudo visudo or open the /etc/sudoerrs file```
    	
 	Comment the "Defaults requiretty" line
 
  * Clone the application's repository from github.
  
-   	git clone https://github.com/alok87/sysadminApp
+   	```git clone https://github.com/alok87/sysadminApp```
 
  * Install go language in your system
 
@@ -61,14 +59,16 @@ Installation
 
  * Install additional libraries 
   
- 	go get -u github.com/gorilla/websocket
+ 	```go get -u github.com/gorilla/websocket```
   
  * Go to the sysadminApp directory and build the go project.
  
-	  cd sysadminApp
+	 ```
+	cd sysadminApp
   
-	 go build -o sysAdmin 
+	go build -o sysAdmin 
    
 	./sysAdmin
-
+	```
+	
  * Visit http://localhost:8005/users
