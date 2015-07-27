@@ -14,10 +14,10 @@ func (this *usersController) serveUsers(w http.ResponseWriter, req *http.Request
 		http.Error(w, "Not found", 404)
 		return
 	}
-	/*if req.Method != "GET" {
+	if req.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
-	}*/
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	this.template.Execute(w, nil)
 	

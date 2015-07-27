@@ -55,6 +55,7 @@
 		<script>
       		$(function(){
       			var socket = null;
+      			var msgBox = $("#chatbox textarea");
         		$("#chatbox").submit(function(){
         			var msgToSend = {
         				username: $("#username").val(),
@@ -64,7 +65,7 @@
         				sudoopt: $('#issudouser').val(),
         				operation: $('#operation').val(),
         			}
-            		var msgJSON = JSON.stringify(msgToSend);
+        			var msgJSON = JSON.stringify(msgToSend);
 		         	if (!msgJSON) return false;
 		          	if (!socket) {
 		            	alert("Error: There is no socket connection.");
@@ -80,7 +81,7 @@
 	          			socket = new WebSocket("ws://localhost:8005/ws");
 	          			
 	          			socket.onmessage = function(e) {
-	            			$('#textbox').append(e.data); 
+	          				$('#textbox').append(e.data); 
 	            			//alert(e.data);
 	          			}
 	          			
@@ -94,6 +95,7 @@
 	          			
 	          			socket.onopen = function(event) {
 	          				//alert("Socket open");
+	          				
 	          			}
         			}
 	      		});

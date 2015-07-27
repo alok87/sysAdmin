@@ -9,13 +9,24 @@ import (
 	"os"
 	"bufio"
 	"log"
-	//"os/exec"
+	"os/exec"
 	"time"
 	"fmt"
 	"encoding/json"
 	
 	"github.com/gorilla/websocket"
 )
+
+func Register(template *template.Template) {
+	
+	uc := new(usersController)
+	uc.template = template.Lookup("users.html")
+	http.HandleFunc("/users", uc.serveUsers)
+	http.HandleFunc("/ws", serveWs)
+	
+	http.HandleFunc("/img/", serveResource)
+	http.HandleFunc("/css/", serveResource)
+}
 
 var (
 	upgrader  = websocket.Upgrader{
@@ -44,15 +55,19 @@ type User struct {
     Operation	string	`json:"operation"`
 }
 
-func Register(template *template.Template) {
-	
-	uc := new(usersController)
-	uc.template = template.Lookup("users.html")
-	http.HandleFunc("/users", uc.serveUsers)
-	http.HandleFunc("/ws", serveWs)
-	
-	http.HandleFunc("/img/", serveResource)
-	http.HandleFunc("/css/", serveResource)
+type Validator struct {
+	err error
+}
+
+func (v *Validator) MustBeNotEmpty(value string) bool {
+	if v.err != nil {
+		return true
+	}
+	if value == "" {
+		v.err = fmt.Errorf("Must not be Empty")
+		return true
+	}
+	return false
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
@@ -95,26 +110,55 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 }	
 
 func (c *client) action() {
-	fmt.Println("forwarding msg to forward channel for action")
+	var msgSentBack string
 	for {
 			msg := <- c.forward 
 			user := &User{}
 			json.Unmarshal([]byte(msg), &user)
-			msgSentback := user.Username
-			//fmt.Println(msg);
-			c.send <- []byte(msgSentback)
-			fmt.Println("msg forwarded to send channel")
+			
+			//General Form Validation
+			validator := new(Validator)
+			// Nothing should be empty
+			if validator.MustBeNotEmpty(user.Username) || validator.MustBeNotEmpty(user.Operation) || validator.MustBeNotEmpty(user.HomeFolder) || validator.MustBeNotEmpty(user.Pass) || validator.MustBeNotEmpty(user.Shelltype) || validator.MustBeNotEmpty(user.SudoOpt) {
+				msgSentBack = "Validation error - all fields required as input. "
+				c.send <- []byte(msgSentBack)
+				return
+				//fmt.Println("from forward > send")
+			} else {
+				switch user.Operation {
+					case "Create": 
+									binary, lookErr := exec.LookPath("useradd")
+								    if lookErr != nil {
+								        panic(lookErr)
+								    }
+								    cmd := exec.Command("sudo", binary, "-d", user.HomeFolder, "-s", user.Shelltype, user.Username)
+								    cmdOut, err := cmd.CombinedOutput()
+								    if err != nil {
+								    	msgSentBack = "Validation error - user not created. "  + string(cmdOut) + fmt.Sprint(err) 
+								    	c.send <- []byte(msgSentBack) 
+								    	return
+								    }	
+								    msgSentBack = "Success - user created. "  + string(cmdOut)	
+								    c.send <- []byte(msgSentBack) 				
+					case "Modify":
+					
+					case "Delete":
+					
+					default:
+						msgSentBack = "Error - Operation can be create, delete or modify only. "
+						c.send <- []byte(msgSentBack)
+				}
+			}
 	}
 }
 
 func (c *client) read() {
-	fmt.Println("Reading msg from socket")
 	for {
 		if _, msg, err := c.socket.ReadMessage(); err == nil {
 			c.forward <- msg
-			fmt.Println("message read, ", msg)
+			fmt.Println("from socket > forward", msg)
 		} else {
-			fmt.Println("error", err)
+			fmt.Println("from socket failed > forward", err)
 			break
 		}
 	}
@@ -124,8 +168,10 @@ func (c *client) read() {
 func (c *client) write() {
 	for msg := range c.send {
 		if err := c.socket.WriteMessage(websocket.TextMessage, msg); err != nil {
+			fmt.Println("from send failed > socket", err)
 			break
 		}
+		fmt.Println("from send > socket", msg)
 	}
 	c.socket.Close()
 }
