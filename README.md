@@ -10,6 +10,7 @@ Installation
    https://docs.docker.com/installation/
 
  * Clone the application's repository from github.
+
    git clone https://github.com/alok87/sysadminApp
 
  * Build the Dockerfile, to create an image.
