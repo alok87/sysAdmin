@@ -13,6 +13,7 @@ import (
 	"time"
 	"fmt"
 	"encoding/json"
+	"io/ioutil"
 	
 	"github.com/gorilla/websocket"
 )
@@ -89,28 +90,11 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	go client.write()
 	go client.action()
 	client.read()
-	
-	/*
-	binary, lookErr := exec.LookPath("echo")
-    if lookErr != nil {
-        panic(lookErr)
-    }
-    cmd := exec.Command(binary, username, shelltype, homefolder, pass, sudoopt, operation)
-    cmdOut, err := cmd.Output()
-    if err != nil {
-        panic(err)
-    }
-    
-    fmt.Println(string(cmdOut))  
-    //ws.SetWriteDeadline(time.Now().Add(writeWait))
-	if err := ws.WriteMessage(websocket.TextMessage, cmdOut); err != nil {
-			fmt.Println(err)
-			return
-	} */
 }	
 
 func (c *client) action() {
-	var msgSentBack string
+	var sudoMsg, passMsg string
+	var sudoErr, passErr error
 	for {
 			msg := <- c.forward 
 			user := &User{}
@@ -120,37 +104,125 @@ func (c *client) action() {
 			validator := new(Validator)
 			// Nothing should be empty
 			if validator.MustBeNotEmpty(user.Username) || validator.MustBeNotEmpty(user.Operation) || validator.MustBeNotEmpty(user.HomeFolder) || validator.MustBeNotEmpty(user.Pass) || validator.MustBeNotEmpty(user.Shelltype) || validator.MustBeNotEmpty(user.SudoOpt) {
-				msgSentBack = "Validation error - all fields required as input. "
+				msgSentBack := "Result: Validation error - All fields required as input.&#13;&#10;"
+				fmt.Println("from forward > send")
 				c.send <- []byte(msgSentBack)
-				return
-				//fmt.Println("from forward > send")
 			} else {
 				switch user.Operation {
 					case "Create": 
-									binary, lookErr := exec.LookPath("useradd")
-								    if lookErr != nil {
-								        panic(lookErr)
-								    }
-								    cmd := exec.Command("sudo", binary, "-d", user.HomeFolder, "-s", user.Shelltype, user.Username)
-								    cmdOut, err := cmd.CombinedOutput()
-								    if err != nil {
-								    	msgSentBack = "Validation error - user not created. "  + string(cmdOut) + fmt.Sprint(err) 
-								    	c.send <- []byte(msgSentBack) 
-								    	return
-								    }	
-								    msgSentBack = "Success - user created. "  + string(cmdOut)	
-								    c.send <- []byte(msgSentBack) 				
+									//Create user
+									createMsg, createErr := user.createUser()
+									if createErr == nil {
+										
+										//Update user's passsword
+										passMsg, passErr = user.updatePass()
+										if passErr != nil {
+											passMsg = "User created, but failed to create password for the new user.&#13;&#10;System Message: " + passMsg
+										}
+										 
+										//Make the user a sudo user if option is selected
+										sudoErr=nil
+										fmt.Println("user op",user.SudoOpt)
+										if user.SudoOpt == "Yes" {
+											fmt.Println("user opeation yes")
+											sudoMsg, sudoErr = user.makeSudo()
+											if sudoErr != nil {
+												sudoMsg = "Failed to make the user a sudo user.&#13;&#10;System Message: " + sudoMsg
+											}
+										}
+									    
+									    if sudoErr==nil && passErr==nil {
+									    	c.send <- []byte(createMsg)
+									    }else {
+									    	msgSentBack := createMsg + "&#13;&#10;" + passMsg + "&#13;&#10;" + sudoMsg
+									    	c.send <- []byte(msgSentBack)
+									    }
+									    
+									}else {
+										c.send <- []byte(createMsg)
+									}			 
 					case "Modify":
+									
 					
 					case "Delete":
 					
 					default:
-						msgSentBack = "Error - Operation can be create, delete or modify only. "
+						msgSentBack := "Result: Error&#13;&#10;Operation can be - create, delete or modify only.&#13;&#10;"
 						c.send <- []byte(msgSentBack)
 				}
 			}
 	}
 }
+
+func (user *User) createUser() (string, error) {
+	var msgSentBack string
+	useradd, lookErr := exec.LookPath("useradd")
+    if lookErr != nil {
+    	msgSentBack = "Result: Error &#13;&#10;System Message: " + fmt.Sprint(lookErr) + "&#13;&#10;"   
+        return msgSentBack, lookErr
+    }								    
+    cmd := exec.Command("sudo", useradd, "-d", user.HomeFolder, "-s", user.Shelltype, user.Username)
+    cmdOut, err := cmd.CombinedOutput()
+    if err != nil {
+    	msgSentBack = "Result: Validation Error!&#13;&#10;"  + "System Message: " + string(cmdOut) + fmt.Sprint(err) + "&#13;&#10;"   	 
+    	return msgSentBack, err
+    }
+    msgSentBack = "User " + user.Username  + " created.&#13;&#10;System Message: " + string(cmdOut) + "&#13;&#10;"
+    return msgSentBack, nil
+}
+
+func (u *User) updatePass() (string, error) {
+	chpasswd, lookErr := exec.LookPath("chpasswd")
+	if lookErr != nil {
+	     return "Failed to find chpasswd in Path", lookErr
+	}
+	userPass := u.Username + ":" + u.Pass
+	passCmd := exec.Command("sudo", chpasswd)	
+	passCmdIn, err := passCmd.StdinPipe()
+	if err == nil {
+		passCmdOut, outerr := passCmd.StdoutPipe()
+			if outerr == nil {
+				passCmd.Start()
+				passCmdIn.Write([]byte(userPass))
+				passCmdIn.Close()
+				_, readerr := ioutil.ReadAll(passCmdOut)
+				if readerr == nil {
+					passCmd.Wait()
+					return "Password updated", nil
+				} else {
+					return "Error reading passCmdOut", readerr
+				} 	
+			} else {
+				return "Error reading STDOUT", outerr
+			}
+	} else	{
+		return "Error reading STDIN", err
+	}
+}		
+
+
+func (user *User) makeSudo() (string, error) {
+	fmt.Println("Inside makesudo()")
+	var msgSentBack string
+	usermod, lookErr := exec.LookPath("usermod")
+    if lookErr != nil {
+    	fmt.Println("Inside llookErr()")
+    	msgSentBack = "System Message: " + fmt.Sprint(lookErr) + "&#13;&#10;"   
+    	fmt.Println(msgSentBack)
+        return msgSentBack, lookErr
+    }								    
+    cmd := exec.Command("sudo", usermod, "-a", "-G", "wheel", user.Username)
+    cmdOut, err := cmd.CombinedOutput()
+    if err != nil {
+    	msgSentBack = "System Message: " + string(cmdOut) + fmt.Sprint(err) + "&#13;&#10;"   	 
+    	fmt.Println(msgSentBack)
+    	return msgSentBack, err
+    }
+    msgSentBack = "User " + user.Username  + " made a sudo user.&#13;&#10;System Message: " + string(cmdOut) + "&#13;&#10;"
+    fmt.Println(msgSentBack)
+    return msgSentBack, nil
+}	
+
 
 func (c *client) read() {
 	for {

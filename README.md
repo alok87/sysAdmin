@@ -1,14 +1,14 @@
-System Adminstrator App
+System Administrator App
 =========================
 This is an open source application for performing regular system admin tasks.
 
 Installation
 =============
-1. Running the application in a container using docker.(Recommended)
+1. Running the application in a container using docker to manage the container.
  
  * Install docker in the machine where this application will run in a container.
  
-   	[Install Golang](hhttps://docs.docker.com/installation/)
+   	[Install Golang](https://docs.docker.com/installation/)
 
  * Clone the application's repository from github.
 
@@ -27,7 +27,7 @@ Installation
  * Visit http://localhost:8005/users
  
 
-2. Running the application by manually setting up the machine.
+2. Running the application by manually setting up the machine to manage the machine.
 
  * Setup the password less sudo access for the user who will run the application. 
  
@@ -40,6 +40,11 @@ Installation
 		User_Alias SUDOUSERS = aks
 		
 		SUDOUSERS       ALL = (ALL) NOPASSWD: ALL
+
+	Uncomment the wheel line to have wheel group password less sudo access
+	## Same thing without a password
+	%wheel  ALL=(ALL)       NOPASSWD: ALL
+
  
  * Disable requiretty 
  
