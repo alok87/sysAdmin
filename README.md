@@ -4,13 +4,13 @@ This is an open source application for performing regular system admin tasks.
 
 Installation
 =============
-1. Running the application in a container using docker to manage the container.
+1. Docker Container running this applciation to manage itself. 
  
  * Install docker in the machine where this application will run in a container.
  
-   	[Install Golang](https://docs.docker.com/installation/)
+   	[Install Docker](https://docs.docker.com/installation/)
 
- * Clone the application's repository from github.
+ * Clone the source from github.
 
    	```git clone https://github.com/alok87/sysadminApp```
 
@@ -27,23 +27,21 @@ Installation
  * Visit http://localhost:8005/users
  
 
-2. Running the application by manually setting up the machine to manage the machine.
+2. Installation in Physical machine/VM to manage itself.
 
  * Setup the password less sudo access for the user who will run the application. 
  
-   	```sudo visudo```	or open the ```/etc/sudoerrs``` file (it wil prompt for the password please give it)
+   	```sudo visudo```	or open the ```/etc/sudoerrs``` file (it wil prompt for the password)
 
    	Add the below lines in it. (user here is aks for example )
    	
-		## Allow root to run any commands anywhere
+		```User_Alias SUDOUSERS = aks
 		
-		User_Alias SUDOUSERS = aks
-		
-		SUDOUSERS       ALL = (ALL) NOPASSWD: ALL
+		SUDOUSERS       ALL = (ALL) NOPASSWD: ALL```
 
-	Uncomment the wheel line to have wheel group password less sudo access
-	## Same thing without a password
-	%wheel  ALL=(ALL)       NOPASSWD: ALL
+	Uncomment the wheel line to have wheel group password less sudo access(optional)
+
+		 ```%wheel  ALL=(ALL)       NOPASSWD: ALL```
 
  
  * Disable requiretty 
@@ -52,28 +50,36 @@ Installation
    	
 	Comment the "Defaults requiretty" line
 
- * Clone the application's repository from github.
+ * Set GOPATH, GOROOT and PATH (put it inside .bashrc of the user that will run the application)
+
+	```export GOROOT=/home/vic/code/golang/go
+
+	export GOPATH=/home/vic/code/golang/workspace
+
+	export PATH=$PATH:$GOROOT/bin:$GOPATH/bin```	
+
+* Download go and put it in GOROOT directory
+	
+	[Install Golang](https://golang.org/doc/install)
+
+ * Clone the application's repository from github inside $GOPATH/src/github.com/alok87
  
-   	```git clone https://github.com/alok87/sysadminApp```
+	```mkdir -p $GOPATH/src/github.com/alok87
+	git clone https://github.com/alok87/sysAdmin```
 
- * Install go language in your system
 
- * Set GOPATH and GOROOT
-
- * Add the current application in your GOPATH
-
- * Install additional libraries 
+ * Install Gorilla's Websocket library and verify it got installed under $GOPATH/bin/ 
   
  	```go get -u github.com/gorilla/websocket```
   
- * Go to the sysadminApp directory and build the go project.
+ * Build the code and run it.
  
 	 ```
-	cd sysadminApp
-  
-	go build -o sysAdmin 
+	cd $GOPATH/src/github.com/alok87/sysAdmin/main/
+  	
+	go install
    
-	./sysAdmin
+	./main
 	```
 	
  * Visit http://localhost:8005/users

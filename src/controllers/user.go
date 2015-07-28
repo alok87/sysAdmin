@@ -69,7 +69,7 @@ func (user *User) createOrModifyUser(action string) (string, error) {
     if string(cmdOut) == "" {
     	msgSentBack = "Result: User, " + user.Username  + " " + action + " Successful !.&#13;&#10;"
     }else {
-    	msgSentBack = "Result: User," + user.Username  + " " + action + " Successful !.&#13;&#10;System Message: " + string(cmdOut) + "&#13;&#10;"
+    	msgSentBack = "Result: User, " + user.Username  + " " + action + " Successful !.&#13;&#10;System Message: " + string(cmdOut) + "&#13;&#10;"
     }
     return msgSentBack, nil
 }
@@ -90,9 +90,9 @@ func (user *User) deleteUser(c *client) {
     	return
     }		
     if string(cmdOut) == "" {
-    	msgSentBack = "Result: User, " + user.Username  + " " +  " deleted Successfully !.&#13;&#10;"
+    	msgSentBack = "Result: User, " + user.Username  + " " +  " Deleted Successfully !.&#13;&#10;"
     }else {
-    	msgSentBack = "Result: User, " + user.Username  + " " +  " deleted Successfully !.&#13;&#10;System Message: " + string(cmdOut) + "&#13;&#10;"
+    	msgSentBack = "Result: User, " + user.Username  + " " +  " Deleted Successfully !.&#13;&#10;System Message: " + string(cmdOut) + "&#13;&#10;"
     }
     c.send <- []byte(msgSentBack)    
 }
@@ -127,7 +127,7 @@ func (u *User) updatePass() (string, error) {
 }		
 
 func (user *User) makeSudo() (string, error) {
-	fmt.Println("Inside makesudo()")
+	
 	var msgSentBack string
 	usermod, lookErr := exec.LookPath("usermod")
     if lookErr != nil {
@@ -144,6 +144,5 @@ func (user *User) makeSudo() (string, error) {
     	return msgSentBack, err
     }
     msgSentBack = "User " + user.Username  + " made a sudo user.&#13;&#10;System Message: " + string(cmdOut) + "&#13;&#10;"
-    fmt.Println(msgSentBack)
     return msgSentBack, nil
 }	

@@ -39,7 +39,7 @@ func Register(template *template.Template) {
 }
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("inside ws")
+	//fmt.Println("inside ws")
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		if _, ok := err.(websocket.HandshakeError); !ok {
@@ -73,7 +73,12 @@ func (this *templateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 }
 
 func serveResource(w http.ResponseWriter, req *http.Request) {
-	path := "templates" + req.URL.Path
+	basePath, err := filepath.Abs("../src/github.com/alok87/sysAdmin/templates")
+	if err != nil {
+		fmt.Println("Could not find path for templates -", basePath)
+		panic(err)
+	}
+	path := basePath + req.URL.Path
 	var contentType string
 	if strings.HasSuffix(path, ".css") {
 		contentType = "text/css"
