@@ -9,26 +9,22 @@ Installation
  * Install docker in the machine where this application will run in a container.
  
    	[Install Docker](https://docs.docker.com/installation/)
-
 	Centos7:	
 	```sudo yum install -y docker```
-         
 	```sudo systemctl start docker```
 
-	
  * Clone the source from github.
-
+ 
    	```git clone https://github.com/alok87/sysAdmin```
 
  * Build the Dockerfile, to create an image.
- 	```
-   	cd sysAdmin
-   	sudo docker build -t alok87/centos01 .
-	```
+ 	
+	```cd sysAdmin; sudo docker build -t alok87/centos01 . ```
+	
  * Run the docker image to spawn the container.
    
 	```sudo docker run -i -t -p 3500:3500 --name centos01 alok87/centos01 /bin/bash```
-	```./main```
+	```/go/bin/main```
  
  * Visit ```http://localhost:3500/users``` from your docker host machine.
  
