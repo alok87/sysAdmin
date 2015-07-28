@@ -36,6 +36,7 @@ Installation
    	Add the below lines in it (user here is aks for example).
    	
 	```User_Alias SUDOUSERS = aks```
+	
 	```SUDOUSERS       ALL = (ALL) NOPASSWD: ALL```
 
 	Uncomment the wheel line to have wheel group password less sudo access(optional)
