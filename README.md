@@ -19,7 +19,7 @@ Installation
    	cd sysadminApp
    	docker build -t alok87/sysAdmin .
 	```
- * Run the docker image to spwan the container.
+ * Run the docker image to spawn the container.
    
 	```docker run --name sysAdmin01 alok87/sysAdmin```
  
@@ -56,13 +56,14 @@ Installation
 
 	```export PATH=$PATH:$GOROOT/bin:$GOPATH/bin```	
 
-* Download go and put it in GOROOT directory
+ * Download go and put it in GOROOT directory
 	
 	[Install Golang](https://golang.org/doc/install)
 
  * Clone the application's repository from github inside $GOPATH/src/github.com/alok87
  
 	```mkdir -p $GOPATH/src/github.com/alok87```
+
 	```git clone https://github.com/alok87/sysAdmin```
 
 
