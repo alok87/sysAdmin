@@ -12,19 +12,18 @@ Installation
 
  * Clone the source from github.
 
-   	```git clone https://github.com/alok87/sysadminApp```
+   	```git clone https://github.com/alok87/sysAdmin```
 
  * Build the Dockerfile, to create an image.
  	```
    	cd sysadminApp
-   	docker build -t <yourusername>/sysadminApp .
-   	eg: docker build -t alok87/sysadminApp
+   	docker build -t alok87/sysAdmin .
 	```
  * Run the docker image to spwan the container.
    
-	```docker run --name sysadmin01 alok87/sysadminApp```
+	```docker run --name sysAdmin01 alok87/sysAdmin```
  
- * Visit http://localhost:8005/users
+ * Visit ```http://localhost:8005/users```
  
 
 2. Installation in Physical machine/VM to manage itself.
@@ -33,11 +32,10 @@ Installation
  
    	```sudo visudo```	or open the ```/etc/sudoerrs``` file (it wil prompt for the password)
 
-   	Add the below lines in it. (user here is aks for example )
+   	Add the below lines in it (user here is aks for example).
    	
-		```User_Alias SUDOUSERS = aks
-		
-		SUDOUSERS       ALL = (ALL) NOPASSWD: ALL```
+	```User_Alias SUDOUSERS = aks```
+	```SUDOUSERS       ALL = (ALL) NOPASSWD: ALL```
 
 	Uncomment the wheel line to have wheel group password less sudo access(optional)
 
@@ -52,11 +50,11 @@ Installation
 
  * Set GOPATH, GOROOT and PATH (put it inside .bashrc of the user that will run the application)
 
-	```export GOROOT=/home/vic/code/golang/go
+	```export GOROOT=/home/vic/code/golang/go```
 
-	export GOPATH=/home/vic/code/golang/workspace
+	```export GOPATH=/home/vic/code/golang/workspace```
 
-	export PATH=$PATH:$GOROOT/bin:$GOPATH/bin```	
+	```export PATH=$PATH:$GOROOT/bin:$GOPATH/bin```	
 
 * Download go and put it in GOROOT directory
 	
@@ -64,8 +62,8 @@ Installation
 
  * Clone the application's repository from github inside $GOPATH/src/github.com/alok87
  
-	```mkdir -p $GOPATH/src/github.com/alok87
-	git clone https://github.com/alok87/sysAdmin```
+	```mkdir -p $GOPATH/src/github.com/alok87```
+	```git clone https://github.com/alok87/sysAdmin```
 
 
  * Install Gorilla's Websocket library and verify it got installed under $GOPATH/bin/ 
@@ -82,4 +80,4 @@ Installation
 	./main
 	```
 	
- * Visit http://localhost:8005/users
+ * Visit ```http://localhost:8005/users```
