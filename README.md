@@ -23,12 +23,10 @@ Installation
 	
  * Run the docker image to spawn the container.
    
-	```sudo docker run -i -t -p 3500:3500 --name centos01 alok87/centos01 /bin/bash```
-	```/go/bin/main```
+	```sudo docker run -i -t -p 3500:3500 --name centos01 alok87/centos01 /bin/bash; /go/bin/main```
  
  * Visit ```http://localhost:3500/users``` from your docker host machine.
  
-
 2. Installation in Physical machine/VM to manage itself.
 
  * Setup the password less sudo access for the user who will run the application. 
