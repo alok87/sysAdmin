@@ -16,7 +16,7 @@ Installation
 
  * Build the Dockerfile, to create an image.
  	```
-   	cd sysadminApp
+   	cd sysAdmin
    	docker build -t alok87/sysAdmin .
 	```
  * Run the docker image to spawn the container.
