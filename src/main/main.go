@@ -15,7 +15,7 @@ func main() {
 	templates := populateTemplates()
 	controllers.Register(templates)
 	
-	if err := http.ListenAndServe(":8005", nil); err != nil {
+	if err := http.ListenAndServe(":3500", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }

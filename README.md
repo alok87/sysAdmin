@@ -10,6 +10,12 @@ Installation
  
    	[Install Docker](https://docs.docker.com/installation/)
 
+	Centos7:	
+	```sudo yum install -y docker```
+         
+	```sudo systemctl start docker```
+
+	
  * Clone the source from github.
 
    	```git clone https://github.com/alok87/sysAdmin```
@@ -17,13 +23,14 @@ Installation
  * Build the Dockerfile, to create an image.
  	```
    	cd sysAdmin
-   	docker build -t alok87/sysAdmin .
+   	sudo docker build -t alok87/centos01 .
 	```
  * Run the docker image to spawn the container.
    
-	```docker run --name sysAdmin01 alok87/sysAdmin```
+	```sudo docker run -i -t -p 3500:3500 --name centos01 alok87/centos01 /bin/bash```
+	```./main```
  
- * Visit ```http://localhost:8005/users```
+ * Visit ```http://localhost:3500/users``` from your docker host machine.
  
 
 2. Installation in Physical machine/VM to manage itself.
@@ -81,4 +88,4 @@ Installation
 	./main
 	```
 	
- * Visit ```http://localhost:8005/users```
+ * Visit ```http://localhost:3500/users```

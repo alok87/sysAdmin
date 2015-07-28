@@ -78,7 +78,7 @@
 	          			alert("Error: Your browser does not support web sockets.")
 	        		} else {
 	        		
-	          			socket = new WebSocket("ws://localhost:8005/ws");
+	          			socket = new WebSocket("ws://localhost:3500/ws");
 	          			
 	          			socket.onmessage = function(e) {
 	          				$('#textbox').append(e.data); 
