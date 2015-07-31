@@ -21,7 +21,7 @@ Installation
  	
 	```cd sysAdmin; sudo docker build -t alok87/centos01 . ```
 	
- * Run the docker image to spawn the container.
+ * Run the docker image to spawn the container. 
    
 	```sudo docker run -i -t -p 3500:3500 --name centos01 alok87/centos01 /bin/bash; /go/bin/main```
  
@@ -73,14 +73,22 @@ Installation
   
  	```go get -u github.com/gorilla/websocket```
   
- * Build the code and run it.
+ * Build the code and run it. 
  
+ 	Note: 1. Application needs to run from the root of application source.
+ 		  2. Port can be any port you want. Default is 3500. 		  
+
 	 ```
 	cd $GOPATH/src/github.com/alok87/sysAdmin/main/
   	
 	go install
+	
+	cd $GOPATH/src/github.com/alok87/sysAdmin
    
-	./main
+	main --addr ':3600'        // You should specify ports below 4999
+	or 
+	main                       // By default it runs on 3500
+	
 	```
 	
- * Visit ```http://localhost:3500/users```
+ * Visit ```http://localhost:<port>/users```

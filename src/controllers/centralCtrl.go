@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 	"text/template"
-	"sync"
 	"path/filepath"
 	"strings"
 	"os"
@@ -59,21 +58,8 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	client.read()
 }	
 
-type templateHandler struct {
-	fileName string
-	once sync.Once
-	template *template.Template
-}
-
-func (this *templateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	this.once.Do(func() {
-			this.template = template.Must(template.ParseFiles(filepath.Join("templates/", this.fileName)))
-		})
-	this.template.Execute(w, nil)
-}
-
 func serveResource(w http.ResponseWriter, req *http.Request) {
-	basePath, err := filepath.Abs("../src/github.com/alok87/sysAdmin/templates")
+	basePath, err := filepath.Abs("templates")
 	if err != nil {
 		fmt.Println("Could not find path for templates -", basePath)
 		panic(err)

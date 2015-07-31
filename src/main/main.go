@@ -7,15 +7,19 @@ import (
 	"text/template"
 	"fmt"
 	"path/filepath"
+	"flag"
 	
 	"github.com/alok87/sysAdmin/src/controllers"
 )
 
+var addr = flag.String("addr", ":3500", "The addr of the application.")
+
 func main() {	
+	flag.Parse()
 	templates := populateTemplates()
 	controllers.Register(templates)
 	
-	if err := http.ListenAndServe(":3500", nil); err != nil {
+	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
@@ -25,7 +29,7 @@ func populateTemplates() *template.Template {
 	result := template.New("templates")
 	
 	// basePath := "templates"
-	basePath, err := filepath.Abs("../src/github.com/alok87/sysAdmin/templates")
+	basePath, err := filepath.Abs("./templates")
 	if err != nil {
 		fmt.Println("Could not find path for templates -", basePath)
 		panic(err)

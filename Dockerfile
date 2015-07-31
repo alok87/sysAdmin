@@ -29,7 +29,7 @@ RUN yum install -y sudo
 RUN go install
 
 # Expose application port
-WORKDIR /go/bin
+WORKDIR /go/src/github.com/alok87/sysAdmin
 EXPOSE 3500 
 
 # Entrypoint, the command which will run when application launches

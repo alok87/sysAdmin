@@ -19,7 +19,7 @@ func (this *usersController) serveUsers(w http.ResponseWriter, req *http.Request
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	this.template.Execute(w, nil)
+	this.template.Execute(w, req)
 	
 }	
 	
